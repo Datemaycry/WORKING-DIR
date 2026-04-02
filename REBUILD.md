@@ -19,7 +19,7 @@ MangaHub Pro est une PWA manga reader (React/Vite/Tailwind). L'app existante fon
 
 - React 19 + TypeScript (dès le départ)
 - Vite + Tailwind CSS
-- Zustand (4 stores : settings, manga, reader, ui)
+- Zustand (5 stores : settings, manga, reader, ui, filter)
 - IndexedDB (wrappers purs, sans React)
 - react-window (virtualisation bibliothèque)
 - Fuse.js (recherche floue)
@@ -86,13 +86,14 @@ interface Settings {
 
 ---
 
-## Les 4 Stores Zustand
+## Les 5 Stores Zustand
 
 ```
-useSettingsStore  → thème, LED, volume, mode affichage, animations
-useMangaStore     → collection, filtres actifs, manga sélectionné
-useReaderStore    → page courante (session), mode double/single
-useUIStore        → modale ouverte, inspector visible, toasts, loading states
+useSettingsStore  → thème, LED, volume, mode affichage, animations       (persisté localStorage)
+useMangaStore     → collection, manga sélectionné, progression persistée  (persisté IndexedDB)
+useReaderStore    → page courante (session), mode double/single           (non persisté)
+useUIStore        → modale ouverte, inspector visible, toasts, loading    (non persisté)
+useFilterStore    → auteurs/séries/tags actifs, searchQuery               (non persisté)
 ```
 
 ---
@@ -120,16 +121,26 @@ useUIStore        → modale ouverte, inspector visible, toasts, loading states
 > Traitées ensemble car les stores Zustand appellent les wrappers IndexedDB
 
 **Data Layer (`src/db/`) :**
-- [ ] `manga.db.ts` — CRUD mangas
-- [ ] `page.db.ts` — CRUD pages
-- [ ] `settings.db.ts` — lecture/écriture settings
+- [ ] `connection.ts` — ouvre/upgrade IndexedDB, versionnée avec schéma migrations
+- [ ] `mangas.ts` — CRUD mangas : getAll, getById, insert, update, delete
+- [ ] `pages.ts` — CRUD pages : getByMangaId, insertBatch, delete
+- [ ] `settings.ts` — get/set settings (clé unique, upsert)
+- [ ] `migration.ts` — script migration depuis l'ancien schéma IndexedDB
 - [ ] Tests Vitest pour chaque wrapper
 
+**Types (`src/types/`) :**
+- [ ] `manga.ts` — interface Manga
+- [ ] `page.ts` — interface Page
+- [ ] `settings.ts` — interface Settings
+- [ ] `progress.ts` — interface ReadingProgress
+- [ ] `filters.ts` — interface FilterState
+
 **Stores Zustand (`src/stores/`) :**
-- [ ] `useSettingsStore.ts` (avec persist middleware → localStorage)
+- [ ] `useSettingsStore.ts` (persist middleware → localStorage)
 - [ ] `useMangaStore.ts`
 - [ ] `useReaderStore.ts`
 - [ ] `useUIStore.ts`
+- [ ] `useFilterStore.ts`
 - [ ] Tests Vitest pour les actions de chaque store
 
 ---

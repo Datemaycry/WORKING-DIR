@@ -27,4 +27,19 @@
 
 ---
 
+## [2026-04-02] — Intégration structure détaillée (session 1, suite)
+
+### Modifié
+- `ARCHITECTURE.md` : réécriture complète avec structure de fichiers exhaustive (tous les composants nommés), flux typiques (ouvrir manga, tourner page, changer thème), conventions de nommage complètes
+- `REBUILD.md` : 5 stores au lieu de 4 (ajout `useFilterStore`), Brique 1+2 enrichie avec `db/connection.ts`, `db/migration.ts`, et les 5 fichiers de types séparés
+
+### Ajouté
+- `STRUCTURE.md` : copie de la réponse Claude sur la structure complète du projet (référence)
+
+### Décisions intégrées
+- **5ème store `useFilterStore`** : filtres bibliothèque séparés de `useMangaStore` — chaque changement de filtre ne traverse pas le store métier
+- **`db/connection.ts`** : connexion IndexedDB versionnée dès Brique 1 (pas en fin de projet)
+- **`db/migration.ts`** : script migration intégré à la data layer dès Brique 1
+- **Types séparés par domaine** : `manga.ts`, `page.ts`, `settings.ts`, `progress.ts`, `filters.ts` (au lieu d'un seul `index.ts`)
+
 <!-- Les prochaines entrées seront ajoutées ici au fil des sessions -->

@@ -1,11 +1,4 @@
-# MangaHub Pro — Architecture
-
-> Référence technique : structure des fichiers, conventions, patterns.
-> Source : plan initial + retours Claude (session 1) + structure détaillée (session 1).
-
----
-
-## Structure complète du projet
+# MangaHub Pro — Structure du projet
 
 ```
 mangahub-pro/
@@ -70,7 +63,7 @@ mangahub-pro/
     │   │                         #   activeModal, inspectorOpen, toasts[], isLoading
     │   │                         #   actions : openModal, closeModal, pushToast, ...
     │   │
-    │   └── useFilterStore.ts     # Filtres actifs de la bibliothèque (pas persisté)
+    │   └── useFilterStore.ts     # Filtres actifs de la bibliothèque
     │                             #   selectedAuthors[], selectedSeries[], selectedTags[], query
     │                             #   actions : toggleFilter, setSearchQuery, clearFilters
     │
@@ -174,7 +167,7 @@ mangahub-pro/
     ├── utils/
     │   ├── image.ts              # resizeCover(blob, maxW, maxH) → blob
     │   ├── format.ts             # formatDate, formatProgress, truncateTitle
-    │   ├── id.ts                 # generateId() → crypto.randomUUID
+    │   ├── id.ts                 # generateId() → nanoid ou crypto.randomUUID
     │   ├── debounce.ts           # debounce générique
     │   └── constants.ts          # Breakpoints, limites (MAX_COVER_SIZE, LRU_CAPACITY...)
     │
@@ -207,7 +200,9 @@ mangahub-pro/
 
 ---
 
-## Couches de dépendances (sens unique ↓)
+## Principes d'organisation
+
+### Couches de dépendances (sens unique ↓)
 
 ```
   types/          ← Aucune dépendance, importé par tout le monde
@@ -225,39 +220,34 @@ mangahub-pro/
   App.tsx         ← Assemble les routes et le Shell
 ```
 
-**Règle absolue** : les flèches ne remontent jamais.
-- `db/` n'importe jamais un store
-- `components/ui/` n'importe jamais un store — données par props uniquement
-- Seuls les composants de feature (library/, reader/, etc.) se connectent aux stores
+**Règle absolue** : les flèches ne remontent jamais. Un fichier dans `db/` n'importe jamais un store. Un composant `ui/` n'importe jamais un store directement — il reçoit ses données par props. Seuls les composants de feature (library/, reader/, etc.) se connectent aux stores.
 
----
+### Pourquoi 5 stores et pas 3 ?
 
-## Les 5 Stores Zustand
+Le document initial prévoyait 3 stores. En pratique, 2 stores supplémentaires émergent naturellement :
 
-| Store | Persisté | Responsabilité |
-|-------|----------|----------------|
-| `useSettingsStore` | ✅ localStorage | Préférences utilisateur (thème, volume, LED…) |
-| `useMangaStore` | ✅ IndexedDB | Collection complète + progression par manga |
-| `useReaderStore` | ❌ mémoire | Session de lecture active (page courante, viewMode) |
-| `useUIStore` | ❌ mémoire | Modales, toasts, panneaux ouverts, loading |
-| `useFilterStore` | ❌ mémoire | Filtres/recherche actifs dans la bibliothèque |
+| Store              | Persisté ?      | Responsabilité                                      |
+| ------------------ | --------------- | --------------------------------------------------- |
+| `useSettingsStore` | ✅ localStorage | Préférences utilisateur (thème, volume, LED…)       |
+| `useMangaStore`    | ✅ IndexedDB    | Collection complète + progression par manga         |
+| `useReaderStore`   | ❌ mémoire      | Session de lecture active (page courante, viewMode) |
+| `useUIStore`       | ❌ mémoire      | Modales, toasts, panneaux ouverts, loading          |
+| `useFilterStore`   | ❌ mémoire      | Filtres/recherche actifs dans la bibliothèque       |
 
----
+Séparer filtres et UI du reste évite que chaque changement de filtre ou ouverture de modale ne traverse les stores métier.
 
-## Conventions de nommage
+### Conventions de nommage
 
 - **Composants** : PascalCase, un fichier = un composant exporté par défaut
 - **Hooks** : `use` + PascalCase → `useSwipeGesture.ts`
 - **Stores** : `use` + PascalCase + `Store` → `useMangaStore.ts`
 - **Utils / DB** : camelCase → `mangas.ts`, `debounce.ts`
 - **Types** : interfaces PascalCase dans des fichiers camelCase → `manga.ts` exporte `interface Manga`
-- **Tests** : colocalisés → `mangas.test.ts` à côté de `mangas.ts`
 
----
+### Fichiers qui travaillent ensemble (flux typiques)
 
-## Flux typiques
+**Ouvrir un manga depuis la bibliothèque :**
 
-### Ouvrir un manga depuis la bibliothèque
 ```
 SearchBar → useFuseSearch → useFilterStore
   → LibraryView filtre la liste
@@ -267,7 +257,8 @@ SearchBar → useFuseSearch → useFilterStore
           → "Lire" → navigate(/reader/:id) → ReaderView
 ```
 
-### Tourner une page dans le reader
+**Tourner une page dans le reader :**
+
 ```
 useSwipeGesture détecte swipe left
   → usePageCurl anime la transition
@@ -276,7 +267,8 @@ useSwipeGesture détecte swipe left
         → useAutoSave (debounce 2s) → useMangaStore.updateProgress() → db/mangas.ts
 ```
 
-### Changer le thème
+**Changer le thème :**
+
 ```
 ThemeSection (onClick "dark")
   → useSettingsStore.setTheme("dark")
@@ -284,67 +276,4 @@ ThemeSection (onClick "dark")
       → useSettingsSync (hook dans Shell.tsx)
         → document.documentElement.setAttribute("data-theme", "dark")
           → CSS tokens switchent via [data-theme="dark"] { --color-bg: ... }
-```
-
----
-
-## Patterns à respecter
-
-### Store Zustand type
-
-```typescript
-interface SettingsStore {
-  ledIntensity: number
-  appTheme: string
-  setLedIntensity: (v: number) => void
-  setAppTheme: (theme: string) => void
-}
-
-export const useSettingsStore = create<SettingsStore>()(
-  persist(
-    (set) => ({
-      ledIntensity: 1.0,
-      appTheme: 'blue',
-      setLedIntensity: (v) => set({ ledIntensity: v }),
-      setAppTheme: (theme) => set({ appTheme: theme }),
-    }),
-    { name: 'mangahub-settings' }
-  )
-)
-```
-
-### Sélection granulaire (évite les re-renders inutiles)
-
-```typescript
-// ✅ Ne re-render que si ledIntensity change
-const ledIntensity = useSettingsStore(s => s.ledIntensity)
-
-// ❌ Re-render à chaque changement du store
-const { ledIntensity } = useSettingsStore()
-```
-
-### Feature flags
-
-```typescript
-// src/flags.ts
-export const FLAGS = {
-  pageCurl: false,
-  sounds: false,
-  ledEffects: true,
-} as const
-```
-
----
-
-## CSS Variables principales
-
-```css
-:root {
-  --led-intensity: 1.0;
-  --page-turn-duration: 0.6s;
-  --page-snap-duration: 0.4s;
-  --color-bg: #0f172a;
-  --color-accent: /* selon appTheme */;
-  --shelf-depth: 40px;
-}
 ```
