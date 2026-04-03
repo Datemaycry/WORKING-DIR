@@ -1,21 +1,38 @@
+import { useMemo } from 'react'
+import { FixedSizeList, type ListChildComponentProps } from 'react-window'
 import type { Manga } from '../../types/manga'
 import ShelfRow from './ShelfRow'
 import EmptyState from '../ui/EmptyState'
-import { SHELF_ROW_GAP } from '../../utils/constants'
+import { SHELF_ROW_HEIGHT } from '../../utils/constants'
+
+interface RowData {
+  rows: Manga[][]
+  coverUrls: Record<string, string | null>
+  onCardClick: (id: string) => void
+}
+
+function Row({ index, style, data }: ListChildComponentProps<RowData>) {
+  return (
+    <ShelfRow
+      style={style}
+      mangas={data.rows[index]}
+      coverUrls={data.coverUrls}
+      onCardClick={data.onCardClick}
+    />
+  )
+}
 
 interface Props {
   mangas: Manga[]
   coverUrls: Record<string, string | null>
   onCardClick: (id: string) => void
   colCount: number
+  height: number
+  width: number
   emptyAction?: React.ReactNode
 }
 
-/**
- * Splits mangas into rows and renders each as a ShelfRow.
- * Virtualisation (react-window) is added in 4b — this version renders all rows.
- */
-export default function Shelf({ mangas, coverUrls, onCardClick, colCount, emptyAction }: Props) {
+export default function Shelf({ mangas, coverUrls, onCardClick, colCount, height, width, emptyAction }: Props) {
   if (mangas.length === 0) {
     return (
       <EmptyState
@@ -27,23 +44,29 @@ export default function Shelf({ mangas, coverUrls, onCardClick, colCount, emptyA
     )
   }
 
-  const rows: Manga[][] = []
-  for (let i = 0; i < mangas.length; i += colCount) {
-    rows.push(mangas.slice(i, i + colCount))
-  }
+  const rows = useMemo(() => {
+    const result: Manga[][] = []
+    for (let i = 0; i < mangas.length; i += colCount) {
+      result.push(mangas.slice(i, i + colCount))
+    }
+    return result
+  }, [mangas, colCount])
+
+  const itemData = useMemo(
+    () => ({ rows, coverUrls, onCardClick }),
+    [rows, coverUrls, onCardClick]
+  )
 
   return (
-    <div className="flex-1 overflow-y-auto pt-4 pb-6">
-      <div className="flex flex-col" style={{ gap: SHELF_ROW_GAP }}>
-        {rows.map((rowMangas, rowIndex) => (
-          <ShelfRow
-            key={rowIndex}
-            mangas={rowMangas}
-            coverUrls={coverUrls}
-            onCardClick={onCardClick}
-          />
-        ))}
-      </div>
-    </div>
+    <FixedSizeList
+      height={height}
+      width={width}
+      itemCount={rows.length}
+      itemSize={SHELF_ROW_HEIGHT}
+      itemData={itemData}
+      overscanCount={2}
+    >
+      {Row}
+    </FixedSizeList>
   )
 }

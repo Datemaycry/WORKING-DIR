@@ -7,6 +7,11 @@ import EmptyState from '../ui/EmptyState'
 import FLAGS from '../../flags'
 import { CARD_COVER_WIDTH, SHELF_CARDS_GAP, SHELF_H_PADDING } from '../../utils/constants'
 
+interface Dims {
+  width: number
+  height: number
+}
+
 function computeColCount(width: number): number {
   if (width <= 0) return 3
   return Math.max(2, Math.floor((width - SHELF_H_PADDING * 2) / (CARD_COVER_WIDTH + SHELF_CARDS_GAP)))
@@ -20,7 +25,7 @@ export default function LibraryView() {
   const handleDBError = useDBErrorHandler()
 
   const containerRef = useRef<HTMLDivElement>(null)
-  const [colCount, setColCount] = useState(3)
+  const [dims, setDims] = useState<Dims>({ width: 0, height: 600 })
 
   useEffect(() => {
     loadCollection().catch(handleDBError)
@@ -30,10 +35,11 @@ export default function LibraryView() {
     const el = containerRef.current
     if (!el) return
     const obs = new ResizeObserver(([entry]) => {
-      setColCount(computeColCount(entry.contentRect.width))
+      const { width, height } = entry.contentRect
+      setDims({ width, height })
     })
     obs.observe(el)
-    setColCount(computeColCount(el.clientWidth))
+    setDims({ width: el.clientWidth, height: el.clientHeight })
     return () => obs.disconnect()
   }, [])
 
@@ -41,13 +47,15 @@ export default function LibraryView() {
     return <EmptyState icon="🚧" title="Bibliothèque" description="Disponible bientôt." />
   }
 
-  // coverUrls: populated by coverObjectURL if already set (filled in 4d)
+  const colCount = computeColCount(dims.width)
+
+  // coverUrls: populated by coverObjectURL when set (filled in 4d via useImageURL)
   const coverUrls: Record<string, string | null> = Object.fromEntries(
     mangas.map((m) => [m.id, m.coverObjectURL ?? null])
   )
 
   return (
-    <div ref={containerRef} className="flex flex-col h-full">
+    <div ref={containerRef} className="flex flex-col flex-1 overflow-hidden">
       {isLoading ? (
         <div className="flex-1 flex items-center justify-center">
           <Spinner size="lg" />
@@ -58,6 +66,8 @@ export default function LibraryView() {
           coverUrls={coverUrls}
           onCardClick={selectManga}
           colCount={colCount}
+          height={dims.height}
+          width={dims.width}
         />
       )}
     </div>

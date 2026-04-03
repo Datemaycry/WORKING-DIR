@@ -1,22 +1,27 @@
 import type { Manga } from '../../types/manga'
 import MangaCard from './MangaCard'
-import { SHELF_CARDS_GAP, SHELF_PLANK_HEIGHT } from '../../utils/constants'
+import { SHELF_CARDS_GAP, SHELF_PLANK_HEIGHT, SHELF_ROW_GAP } from '../../utils/constants'
 
 interface Props {
   mangas: Manga[]
   coverUrls: Record<string, string | null>
   onCardClick: (id: string) => void
-  /** Passed by react-window in 4b for absolute positioning */
+  /**
+   * Passed by react-window — includes absolute position + total row height.
+   * paddingTop (SHELF_ROW_GAP) is baked into the row height so the gap
+   * between rows is part of each row's allocated space.
+   */
   style?: React.CSSProperties
 }
 
 /**
  * A single shelf row: a flex row of MangaCards + a wooden plank beneath.
+ * The top padding (SHELF_ROW_GAP) is included so SHELF_ROW_HEIGHT is self-contained.
  * Pure component — no store imports.
  */
 export default function ShelfRow({ mangas, coverUrls, onCardClick, style }: Props) {
   return (
-    <div style={style} className="flex flex-col">
+    <div style={{ ...style, paddingTop: SHELF_ROW_GAP }} className="flex flex-col">
       {/* Cards */}
       <div className="flex flex-row items-end px-4" style={{ gap: SHELF_CARDS_GAP }}>
         {mangas.map((manga) => (
