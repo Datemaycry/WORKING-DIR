@@ -18,9 +18,9 @@ Résume-moi où on en est et ce qu'on fait aujourd'hui.
 
 ## En cours
 
-**Brique :** Brique 1+2 — Data Layer + State (à démarrer)
+**Brique :** Brique 3 — Shell & Design System (à démarrer)
 
-**Prochaine action :** Créer la branche `brick/1-data-state`, implémenter `src/db/connection.ts` puis CRUD mangas/pages/settings
+**Prochaine action :** Créer la branche `brick/3-shell`, implémenter AppShell, tokens CSS, composants atomiques (Button, Slider, Modal, Pill, Toast), Error Boundary, hook useSettingsSync
 
 ---
 

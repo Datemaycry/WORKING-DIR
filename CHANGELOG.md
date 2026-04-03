@@ -56,4 +56,24 @@
 - `src/App.tsx` : HashRouter avec routes `/`, `/reader/:id`, `/settings`
 - `index.html` : HTML minimal avec meta viewport et theme-color
 
+## [2026-04-03] — Brique 1+2 : Data Layer + State
+
+### Ajouté
+- `src/types/` : split en 5 fichiers séparés (`manga.ts`, `page.ts`, `settings.ts`, `progress.ts`, `filters.ts`) — `index.ts` re-exporte tout
+- `src/db/connection.ts` : ouverture/upgrade IndexedDB v1 (stores: mangas, pages, settings) avec `resetDBConnection(factory?)` injectable pour les tests
+- `src/db/mangas.ts` : CRUD mangas (getAllMangas, getMangaById, insertManga, updateManga, deleteManga) + tests (5 tests)
+- `src/db/pages.ts` : CRUD pages (getPagesByMangaId, insertBatchPages, deletePagesByMangaId) + tests (4 tests)
+- `src/db/settings.ts` : get/set settings upsert + tests (3 tests)
+- `src/db/migration.ts` : migration depuis l'ancien schéma (mangaDB) — gated par FLAGS.MIGRATION
+- `src/stores/useSettingsStore.ts` : persist localStorage, actions set* + tests (5 tests)
+- `src/stores/useMangaStore.ts` : collection, selectedManga(), loadCollection, addManga, removeManga, updateProgress + tests (7 tests)
+- `src/stores/useReaderStore.ts` : openManga, nextPage, prevPage, goToPage, setViewMode + tests (7 tests)
+- `src/stores/useUIStore.ts` : modales, inspector, toasts, loading + tests (5 tests)
+- `src/stores/useFilterStore.ts` : toggleAuthor/Series/Tag, searchQuery, clearFilters + tests (4 tests)
+- `src/test-setup.ts` + `vitest.config.ts` : setup fake-indexeddb global + IDBFactory par test pour isolation
+- `fake-indexeddb` installé en devDependency
+
+### Résultat tests
+40/40 tests passent — `npx tsc --noEmit` 0 erreur
+
 <!-- Les prochaines entrées seront ajoutées ici au fil des sessions -->

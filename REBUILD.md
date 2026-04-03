@@ -115,33 +115,33 @@ useFilterStore    → auteurs/séries/tags actifs, searchQuery               (no
 ---
 
 ### Brique 1+2 — Data Layer + State (phase combinée)
-**Statut : [ ] À faire**
+**Statut : [x] Terminé**
 **Branche : `brick/1-data-state`**
 
 > Traitées ensemble car les stores Zustand appellent les wrappers IndexedDB
 
 **Data Layer (`src/db/`) :**
-- [ ] `connection.ts` — ouvre/upgrade IndexedDB, versionnée avec schéma migrations
-- [ ] `mangas.ts` — CRUD mangas : getAll, getById, insert, update, delete
-- [ ] `pages.ts` — CRUD pages : getByMangaId, insertBatch, delete
-- [ ] `settings.ts` — get/set settings (clé unique, upsert)
-- [ ] `migration.ts` — script migration depuis l'ancien schéma IndexedDB
-- [ ] Tests Vitest pour chaque wrapper
+- [x] `connection.ts` — ouvre/upgrade IndexedDB, versionnée avec schéma migrations
+- [x] `mangas.ts` — CRUD mangas : getAll, getById, insert, update, delete
+- [x] `pages.ts` — CRUD pages : getByMangaId, insertBatch, delete
+- [x] `settings.ts` — get/set settings (clé unique, upsert)
+- [x] `migration.ts` — script migration depuis l'ancien schéma IndexedDB
+- [x] Tests Vitest pour chaque wrapper
 
 **Types (`src/types/`) :**
-- [ ] `manga.ts` — interface Manga
-- [ ] `page.ts` — interface Page
-- [ ] `settings.ts` — interface Settings
-- [ ] `progress.ts` — interface ReadingProgress
-- [ ] `filters.ts` — interface FilterState
+- [x] `manga.ts` — interface Manga
+- [x] `page.ts` — interface Page
+- [x] `settings.ts` — interface Settings
+- [x] `progress.ts` — interface ReadingProgress
+- [x] `filters.ts` — interface FilterState
 
 **Stores Zustand (`src/stores/`) :**
-- [ ] `useSettingsStore.ts` (persist middleware → localStorage)
-- [ ] `useMangaStore.ts`
-- [ ] `useReaderStore.ts`
-- [ ] `useUIStore.ts`
-- [ ] `useFilterStore.ts`
-- [ ] Tests Vitest pour les actions de chaque store
+- [x] `useSettingsStore.ts` (persist middleware → localStorage)
+- [x] `useMangaStore.ts`
+- [x] `useReaderStore.ts`
+- [x] `useUIStore.ts`
+- [x] `useFilterStore.ts`
+- [x] Tests Vitest pour les actions de chaque store
 
 ---
 
