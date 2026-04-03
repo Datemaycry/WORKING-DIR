@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useMangaStore } from '../../stores/useMangaStore'
 import { useSettingsStore } from '../../stores/useSettingsStore'
+import { useUIStore } from '../../stores/useUIStore'
 import { useDBErrorHandler } from '../../hooks/useDBErrorHandler'
 import { coverURLCache } from '../../hooks/useLRUCache'
 import { getCoverBlob } from '../../db/pages'
@@ -26,7 +27,13 @@ export default function LibraryView() {
   const loadCollection = useMangaStore((s) => s.loadCollection)
   const selectManga = useMangaStore((s) => s.selectManga)
   const shelfTheme = useSettingsStore((s) => s.shelfTheme)
+  const setInspectorOpen = useUIStore((s) => s.setInspectorOpen)
   const handleDBError = useDBErrorHandler()
+
+  function handleCardClick(mangaId: string) {
+    selectManga(mangaId)
+    setInspectorOpen(true)
+  }
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [dims, setDims] = useState<Dims>({ width: 0, height: 600 })
@@ -93,7 +100,7 @@ export default function LibraryView() {
         <Shelf
           mangas={mangas}
           coverUrls={coverUrls}
-          onCardClick={selectManga}
+          onCardClick={handleCardClick}
           colCount={colCount}
           height={dims.height}
           width={dims.width}
