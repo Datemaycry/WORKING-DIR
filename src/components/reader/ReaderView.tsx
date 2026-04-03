@@ -7,7 +7,9 @@ import { useKeyboardNav } from '../../hooks/useKeyboardNav'
 import { useSwipeGesture } from '../../hooks/useSwipeGesture'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { useAutoSave } from '../../hooks/useAutoSave'
+import { usePageCurl } from '../../hooks/usePageCurl'
 import { getPageByNumber } from '../../db/pages'
+import PageCurlCanvas from './PageCurlCanvas'
 import PageDisplay from './PageDisplay'
 import ReaderHUD from './ReaderHUD'
 import ReaderToolbar from './ReaderToolbar'
@@ -131,12 +133,22 @@ export default function ReaderView() {
   useKeyboardNav({ onNext: handleNext, onPrev: handlePrev, onClose: handleBack })
   useAutoSave(mangaId, currentPage, effective)
 
-  useSwipeGesture(containerRef, {
-    onSwipe: ({ direction }) => {
-      if (direction === 'left')  handleNext()
-      if (direction === 'right') handlePrev()
-    },
-  })
+  // Page curl — replaces the plain swipe gesture when the flag is on
+  const curl = usePageCurl(
+    FLAGS.PAGE_CURL ? containerRef : { current: null },
+    { onNext: handleNext, onPrev: handlePrev }
+  )
+
+  // Plain swipe only when curl is off (curl has its own swipe listener)
+  useSwipeGesture(
+    FLAGS.PAGE_CURL ? { current: null } : containerRef,
+    {
+      onSwipe: ({ direction }) => {
+        if (direction === 'left')  handleNext()
+        if (direction === 'right') handlePrev()
+      },
+    }
+  )
 
   return (
     <div
@@ -153,6 +165,9 @@ export default function ReaderView() {
         viewMode={viewMode}
         isLandscape={isLandscape}
       />
+
+      {/* Page curl overlay */}
+      {FLAGS.PAGE_CURL && <PageCurlCanvas curl={curl} />}
 
       {/* Toolbar (back + prev/next + slider) */}
       <ReaderToolbar
