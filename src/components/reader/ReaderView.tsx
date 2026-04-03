@@ -4,6 +4,7 @@ import { useMangaStore } from '../../stores/useMangaStore'
 import { useReaderStore } from '../../stores/useReaderStore'
 import { useDBErrorHandler } from '../../hooks/useDBErrorHandler'
 import { useKeyboardNav } from '../../hooks/useKeyboardNav'
+import { useSwipeGesture } from '../../hooks/useSwipeGesture'
 import { getPageByNumber } from '../../db/pages'
 import PageDisplay from './PageDisplay'
 import ReaderHUD from './ReaderHUD'
@@ -27,6 +28,7 @@ export default function ReaderView() {
   const mangas      = useMangaStore((s) => s.mangas)
   const handleDBError = useDBErrorHandler()
 
+  const containerRef = useRef<HTMLDivElement>(null)
   const pageCacheRef = useRef<Map<number, Blob | null>>(new Map())
   const [currentBlob, setCurrentBlob] = useState<Blob | null>(null)
   const [isLoading, setIsLoading]     = useState(true)
@@ -111,8 +113,16 @@ export default function ReaderView() {
 
   useKeyboardNav({ onNext: handleNext, onPrev: handlePrev, onClose: handleBack })
 
+  useSwipeGesture(containerRef, {
+    onSwipe: ({ direction }) => {
+      if (direction === 'left')  handleNext()
+      if (direction === 'right') handlePrev()
+    },
+  })
+
   return (
     <div
+      ref={containerRef}
       className="relative w-full h-full bg-black overflow-hidden"
       onClick={showToolbar}
     >
