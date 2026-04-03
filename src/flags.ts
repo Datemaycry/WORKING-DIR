@@ -10,7 +10,7 @@ const FLAGS = {
   /** Brique 4.5 — MangaInspector side panel */
   INSPECTOR: true,
   /** Brique 5 — Reader */
-  READER: false,
+  READER: true,
   /** Brique 5e — Page curl animation */
   PAGE_CURL: false,
   /** Brique 5g — Sound effects */

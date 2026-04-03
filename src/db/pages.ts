@@ -32,6 +32,30 @@ export async function insertBatchPages(pages: Page[]): Promise<void> {
 }
 
 /**
+ * Returns a single page by mangaId + pageNumber.
+ * Uses a cursor so only one blob is loaded (avoids loading the full manga).
+ */
+export async function getPageByNumber(mangaId: string, pageNumber: number): Promise<Page | null> {
+  const db = await getDB()
+  return new Promise<Page | null>((resolve, reject) => {
+    const tx = db.transaction('pages', 'readonly')
+    const index = tx.objectStore('pages').index('by_mangaId')
+    const req = index.openCursor(IDBKeyRange.only(mangaId))
+    req.onsuccess = () => {
+      const cursor = req.result
+      if (!cursor) { resolve(null); return }
+      const page = cursor.value as Page
+      if (page.pageNumber === pageNumber) {
+        resolve(page)
+      } else {
+        cursor.continue()
+      }
+    }
+    req.onerror = () => reject(req.error)
+  })
+}
+
+/**
  * Returns the blob of the first page for a manga (used as its cover).
  * Uses a cursor so only one record is loaded, not the entire page set.
  */

@@ -1,4 +1,4 @@
-import { HashRouter, Route, Routes } from 'react-router-dom'
+import { HashRouter, Outlet, Route, Routes } from 'react-router-dom'
 import ErrorBoundary from './components/ui/ErrorBoundary'
 import Shell from './components/layout/Shell'
 import ToastContainer from './components/ui/Toast'
@@ -6,14 +6,26 @@ import EmptyState from './components/ui/EmptyState'
 import Button from './components/ui/Button'
 import LibraryView from './components/library/LibraryView'
 import MangaInspector from './components/inspector/MangaInspector'
+import ReaderView from './components/reader/ReaderView'
 
-function PlaceholderPage({ name }: { name: string }) {
+// ── Layout: library + settings (header + navbar) ──────────────
+function MainLayout() {
   return (
-    <EmptyState
-      icon="🚧"
-      title={name}
-      description="Cette section sera disponible dans une prochaine brique."
-    />
+    <Shell>
+      <Outlet />
+      <ToastContainer />
+      <MangaInspector />
+    </Shell>
+  )
+}
+
+// ── Layout: reader (full-screen, no chrome) ───────────────────
+function ReaderLayout() {
+  return (
+    <Shell hideHeader hideNav>
+      <Outlet />
+      <ToastContainer />
+    </Shell>
   )
 }
 
@@ -21,15 +33,18 @@ export default function App() {
   return (
     <ErrorBoundary>
       <HashRouter>
-        <Shell>
-          <Routes>
+        <Routes>
+          <Route element={<MainLayout />}>
             <Route path="/" element={<LibraryView />} />
-            <Route path="/reader/:id" element={<PlaceholderPage name="Reader" />} />
             <Route
               path="/settings"
               element={
                 <div className="p-6 flex flex-col gap-4">
-                  <PlaceholderPage name="Paramètres" />
+                  <EmptyState
+                    icon="🚧"
+                    title="Paramètres"
+                    description="Cette section sera disponible dans une prochaine brique."
+                  />
                   <Button variant="primary" onClick={() => alert('Brique 7')}>
                     Test Button primary
                   </Button>
@@ -40,10 +55,11 @@ export default function App() {
                 </div>
               }
             />
-          </Routes>
-          <ToastContainer />
-          <MangaInspector />
-        </Shell>
+          </Route>
+          <Route element={<ReaderLayout />}>
+            <Route path="/reader/:id" element={<ReaderView />} />
+          </Route>
+        </Routes>
       </HashRouter>
     </ErrorBoundary>
   )
