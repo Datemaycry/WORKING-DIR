@@ -18,13 +18,26 @@ Résume-moi où on en est et ce qu'on fait aujourd'hui.
 
 ## En cours
 
-**Brique :** Brique 5 — Reader (à démarrer)
+**Brique :** Brique 6 — Formulaires (à démarrer)
 
-**Prochaine action :** Créer la branche `brick/5-reader`, démarrer par 5a (affichage image simple via `pages` store/IndexedDB), puis 5b (navigation clavier/boutons), 5c (swipe `useSwipeGesture`), 5d (double page), 5h (progression auto), 5e (curl), 5f (mode nuit), 5g (sons)
+**Prochaine action :** Créer la branche `brick/6-forms`, démarrer par 6a (structure formulaire ajout MangaForm), puis 6b (CoverUploader canvas resize), 6c (PageImporter IndexedDB batch + progress), 6d (ValueSelectorModal multi-select), 6e (formulaire édition)
 
 ---
 
 ## Historique des sessions
+
+### Session 4 — 2026-04-03
+- Brique 5 complète (5a→5g + 5h)
+- Reader full-screen : lazy-load blobs, pre-fetch +2, cache ref
+- Navigation : clavier (arrows/Space/Esc), swipe Pointer Events, tap zones, slider
+- Double page automatique en landscape (useMediaQuery)
+- useAutoSave debounce 1.5s + flush unmount → IndexedDB
+- Page curl CSS (FLAGS.PAGE_CURL=false), NightModeOverlay, useSounds (FLAGS.SOUND=false)
+- App restructuré avec layout routes (MainLayout / ReaderLayout)
+- 40/40 tests — 0 erreur TypeScript
+- **Prochaine étape : Brique 6 — Formulaires**
+
+---
 
 ### Session 3 — 2026-04-03 (suite)
 - Brique 4 complète (4a→4h + 4.5)

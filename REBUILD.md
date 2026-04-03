@@ -178,19 +178,17 @@ useFilterStore    → auteurs/séries/tags actifs, searchQuery               (no
 ---
 
 ### Brique 5 — Reader
-**Statut : [ ] À faire**
+**Statut : [x] Terminé**
 **Branche : `brick/5-reader`**
 
-> Ordre révisé : progression (5h) avant le polish visuel (curl, nuit)
-
-- [ ] 5a : Affichage image simple
-- [ ] 5b : Navigation clavier/boutons
-- [ ] 5c : Swipe tactile → hook `useSwipeGesture` (direction, progression 0→1, vélocité)
-- [ ] 5d : Double page (landscape auto)
-- [ ] 5h : Progression auto (sauvegarde IndexedDB) ← avancé ici
-- [ ] 5e : Animation page curl (consomme `useSwipeGesture`)
-- [ ] 5f : Mode nuit + filtres CSS
-- [ ] 5g : Sons
+- [x] 5a : Affichage image simple
+- [x] 5b : Navigation clavier/boutons
+- [x] 5c : Swipe tactile → hook `useSwipeGesture`
+- [x] 5d : Double page (landscape auto)
+- [x] 5h : Progression auto (sauvegarde IndexedDB)
+- [x] 5e : Animation page curl (FLAGS.PAGE_CURL)
+- [x] 5f : Mode nuit + filtres CSS
+- [x] 5g : Sons (FLAGS.SOUND)
 
 ---
 

@@ -134,4 +134,29 @@
 ### Résultat
 40/40 tests passent — `npx tsc --noEmit` 0 erreur
 
+## [2026-04-03] — Brique 5 : Reader
+
+### Ajouté
+- `src/db/pages.ts` : `getPageByNumber(mangaId, pageNumber)` — chargement lazy d'un seul blob
+- `src/components/reader/SinglePage.tsx` : affichage image via `useImageURL` (revoke auto)
+- `src/components/reader/DoublePage.tsx` : spread 2 pages côte-à-côte (landscape)
+- `src/components/reader/PageDisplay.tsx` : routage single/double selon viewMode + orientation
+- `src/components/reader/ReaderHUD.tsx` : overlay page counter (X / N)
+- `src/components/reader/ReaderToolbar.tsx` : top bar (back+titre) + tap zones prev/next + slider (auto-hide 3s)
+- `src/components/reader/PageSlider.tsx` : range input navigation rapide
+- `src/components/reader/PageCurlCanvas.tsx` : effet curl CSS (FLAGS.PAGE_CURL)
+- `src/components/reader/NightModeOverlay.tsx` : filtre sepia/brightness (--night-* CSS vars)
+- `src/components/reader/ReaderView.tsx` : orchestrateur complet (lazy load, cache blobs, pre-fetch +2)
+- `src/hooks/useKeyboardNav.ts` : arrows/Space/Escape → navigation page
+- `src/hooks/useSwipeGesture.ts` : Pointer Events → direction, progress, velocity
+- `src/hooks/usePageCurl.ts` : consomme useSwipeGesture, expose PageCurlState (FLAGS.PAGE_CURL)
+- `src/hooks/useMediaQuery.ts` : MediaQueryList avec cleanup
+- `src/hooks/useAutoSave.ts` : debounce 1.5s + flush unmount → updateProgress IndexedDB
+- `src/hooks/useSounds.ts` : HTMLAudio lazy-load, volume store, FLAGS.SOUND
+- `src/App.tsx` : layout routes (MainLayout + ReaderLayout full-screen hideHeader/hideNav)
+- `FLAGS.READER = true`
+
+### Résultat
+40/40 tests — `npx tsc --noEmit` 0 erreur
+
 <!-- Les prochaines entrées seront ajoutées ici au fil des sessions -->
