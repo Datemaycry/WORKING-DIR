@@ -1,5 +1,8 @@
 import { useMemo } from 'react'
-import { FixedSizeList, type ListChildComponentProps } from 'react-window'
+import * as ReactWindow from 'react-window'
+import type { ListChildComponentProps } from 'react-window'
+
+const FixedSizeList = ReactWindow.FixedSizeList
 import type { Manga } from '../../types/manga'
 import ShelfRow from './ShelfRow'
 import EmptyState from '../ui/EmptyState'
