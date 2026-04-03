@@ -1,0 +1,19 @@
+import { useEffect, useState } from 'react'
+
+/**
+ * Returns true while `query` matches. Re-evaluates on viewport change.
+ * Cleans up its MediaQueryList listener on unmount.
+ */
+export function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches)
+
+  useEffect(() => {
+    const mql = window.matchMedia(query)
+    const handler = (e: MediaQueryListEvent) => setMatches(e.matches)
+    setMatches(mql.matches)
+    mql.addEventListener('change', handler)
+    return () => mql.removeEventListener('change', handler)
+  }, [query])
+
+  return matches
+}

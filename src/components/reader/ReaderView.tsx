@@ -5,6 +5,7 @@ import { useReaderStore } from '../../stores/useReaderStore'
 import { useDBErrorHandler } from '../../hooks/useDBErrorHandler'
 import { useKeyboardNav } from '../../hooks/useKeyboardNav'
 import { useSwipeGesture } from '../../hooks/useSwipeGesture'
+import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { getPageByNumber } from '../../db/pages'
 import PageDisplay from './PageDisplay'
 import ReaderHUD from './ReaderHUD'
@@ -28,10 +29,15 @@ export default function ReaderView() {
   const mangas      = useMangaStore((s) => s.mangas)
   const handleDBError = useDBErrorHandler()
 
+  const viewMode    = useReaderStore((s) => s.viewMode)
+  const setViewMode = useReaderStore((s) => s.setViewMode)
+  const isLandscape = useMediaQuery('(orientation: landscape)')
+
   const containerRef = useRef<HTMLDivElement>(null)
   const pageCacheRef = useRef<Map<number, Blob | null>>(new Map())
-  const [currentBlob, setCurrentBlob] = useState<Blob | null>(null)
-  const [isLoading, setIsLoading]     = useState(true)
+  const [currentBlob, setCurrentBlob]   = useState<Blob | null>(null)
+  const [nextBlob, setNextBlob]         = useState<Blob | null>(null)
+  const [isLoading, setIsLoading]       = useState(true)
   const [toolbarVisible, setToolbarVisible] = useState(true)
 
   // Auto-hide toolbar after 3 s of inactivity
@@ -74,6 +80,8 @@ export default function ReaderView() {
 
     setIsLoading(true)
 
+    const effective = totalPages || mangas.find((m) => m.id === id)?.totalPages || 0
+
     loadPage(currentPage)
       .then((blob) => {
         setCurrentBlob(blob)
@@ -84,10 +92,18 @@ export default function ReaderView() {
         setIsLoading(false)
       })
 
-    // Pre-load next page silently
-    const effective = totalPages || mangas.find((m) => m.id === id)?.totalPages || 0
+    // Load next page (used by DoublePage + pre-fetch)
     if (currentPage + 1 < effective) {
-      loadPage(currentPage + 1).catch(() => {})
+      loadPage(currentPage + 1)
+        .then(setNextBlob)
+        .catch(() => setNextBlob(null))
+    } else {
+      setNextBlob(null)
+    }
+
+    // Pre-load page after next
+    if (currentPage + 2 < effective) {
+      loadPage(currentPage + 2).catch(() => {})
     }
   }, [id, currentPage, totalPages, mangas, handleDBError])
 
@@ -129,8 +145,11 @@ export default function ReaderView() {
       {/* Page */}
       <PageDisplay
         blob={currentBlob}
+        blobNext={nextBlob}
         isLoading={isLoading}
         pageNumber={currentPage}
+        viewMode={viewMode}
+        isLandscape={isLandscape}
       />
 
       {/* Toolbar (back + prev/next + slider) */}
