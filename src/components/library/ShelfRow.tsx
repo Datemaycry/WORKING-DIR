@@ -1,5 +1,6 @@
 import type { Manga } from '../../types/manga'
 import MangaCard from './MangaCard'
+import LEDStrip from './LEDStrip'
 import { SHELF_CARDS_GAP, SHELF_PLANK_HEIGHT, SHELF_ROW_GAP } from '../../utils/constants'
 
 interface Props {
@@ -34,18 +35,21 @@ export default function ShelfRow({ mangas, coverUrls, onCardClick, style }: Prop
         ))}
       </div>
 
-      {/* Shelf plank */}
+      {/* Shelf plank — color driven by --shelf-plank-* tokens (theme-aware) */}
       <div
         className="mx-2"
         style={{
           height: SHELF_PLANK_HEIGHT,
           background:
-            'linear-gradient(180deg, #6b3f1f 0%, #4a2a10 55%, #2e1a08 100%)',
+            'linear-gradient(180deg, var(--shelf-plank-from) 0%, var(--shelf-plank-mid) 55%, var(--shelf-plank-to) 100%)',
           borderRadius: '0 0 2px 2px',
           boxShadow:
             '0 4px 12px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,200,100,0.08)',
         }}
       />
+
+      {/* LED glow strip beneath the plank */}
+      <LEDStrip />
     </div>
   )
 }

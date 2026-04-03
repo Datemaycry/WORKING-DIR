@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useMangaStore } from '../../stores/useMangaStore'
+import { useSettingsStore } from '../../stores/useSettingsStore'
 import { useDBErrorHandler } from '../../hooks/useDBErrorHandler'
 import Shelf from './Shelf'
 import Spinner from '../ui/Spinner'
@@ -22,6 +23,7 @@ export default function LibraryView() {
   const isLoading = useMangaStore((s) => s.isLoading)
   const loadCollection = useMangaStore((s) => s.loadCollection)
   const selectManga = useMangaStore((s) => s.selectManga)
+  const shelfTheme = useSettingsStore((s) => s.shelfTheme)
   const handleDBError = useDBErrorHandler()
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -55,7 +57,7 @@ export default function LibraryView() {
   )
 
   return (
-    <div ref={containerRef} className="flex flex-col flex-1 overflow-hidden">
+    <div ref={containerRef} className="flex flex-col flex-1 overflow-hidden" data-shelf-theme={shelfTheme !== 'wood' ? shelfTheme : undefined}>
       {isLoading ? (
         <div className="flex-1 flex items-center justify-center">
           <Spinner size="lg" />

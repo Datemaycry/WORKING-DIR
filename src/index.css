@@ -33,6 +33,11 @@
   --led-intensity: 0.6;
   --shelf-depth: 40px;
 
+  /* Shelf plank — theme: wood (default) */
+  --shelf-plank-from: #6b3f1f;
+  --shelf-plank-mid: #4a2a10;
+  --shelf-plank-to: #2e1a08;
+
   /* Night mode overlay (overridden by useSettingsSync) */
   --night-sepia: 0;
   --night-brightness: 1;
@@ -192,3 +197,16 @@ a {
 .animate-fade-in  { animation: fade-in var(--duration-normal) ease both; }
 .animate-slide-up { animation: slide-up var(--duration-normal) ease both; }
 .animate-toast-in { animation: toast-in 200ms ease both; }
+
+/* ── Shelf themes ───────────────────────────────────────────── */
+[data-shelf-theme="dark"] {
+  --shelf-plank-from: #1e1e1e;
+  --shelf-plank-mid: #141414;
+  --shelf-plank-to: #0a0a0a;
+}
+
+[data-shelf-theme="glass"] {
+  --shelf-plank-from: rgba(255, 255, 255, 0.12);
+  --shelf-plank-mid: rgba(255, 255, 255, 0.07);
+  --shelf-plank-to: rgba(255, 255, 255, 0.03);
+}
