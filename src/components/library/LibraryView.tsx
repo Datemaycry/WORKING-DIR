@@ -1,24 +1,36 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useMangaStore } from '../../stores/useMangaStore'
 import { useSettingsStore } from '../../stores/useSettingsStore'
 import { useUIStore } from '../../stores/useUIStore'
+import { useFilterStore } from '../../stores/useFilterStore'
 import { useDBErrorHandler } from '../../hooks/useDBErrorHandler'
 import { coverURLCache } from '../../hooks/useLRUCache'
 import { getCoverBlob } from '../../db/pages'
+import type { Manga } from '../../types/manga'
 import Shelf from './Shelf'
+import FilterBar from './FilterBar'
+import FilterModal from './FilterModal'
 import Spinner from '../ui/Spinner'
 import EmptyState from '../ui/EmptyState'
 import FLAGS from '../../flags'
 import { CARD_COVER_WIDTH, SHELF_CARDS_GAP, SHELF_H_PADDING } from '../../utils/constants'
 
-interface Dims {
-  width: number
-  height: number
-}
+interface Dims { width: number; height: number }
+
+const FILTER_BAR_HEIGHT = 44 // px, matches h-11
 
 function computeColCount(width: number): number {
   if (width <= 0) return 3
   return Math.max(2, Math.floor((width - SHELF_H_PADDING * 2) / (CARD_COVER_WIDTH + SHELF_CARDS_GAP)))
+}
+
+function applyFilters(mangas: Manga[], activeAuthors: string[], activeSeries: string[], activeTags: string[]): Manga[] {
+  return mangas.filter((m) => {
+    if (activeAuthors.length > 0 && !activeAuthors.some((a) => m.authors.includes(a))) return false
+    if (activeSeries.length > 0 && !activeSeries.some((s) => m.series.includes(s))) return false
+    if (activeTags.length > 0 && !activeTags.some((t) => m.tags.includes(t))) return false
+    return true
+  })
 }
 
 export default function LibraryView() {
@@ -28,16 +40,15 @@ export default function LibraryView() {
   const selectManga = useMangaStore((s) => s.selectManga)
   const shelfTheme = useSettingsStore((s) => s.shelfTheme)
   const setInspectorOpen = useUIStore((s) => s.setInspectorOpen)
+  const activeAuthors = useFilterStore((s) => s.activeAuthors)
+  const activeSeries = useFilterStore((s) => s.activeSeries)
+  const activeTags = useFilterStore((s) => s.activeTags)
   const handleDBError = useDBErrorHandler()
-
-  function handleCardClick(mangaId: string) {
-    selectManga(mangaId)
-    setInspectorOpen(true)
-  }
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [dims, setDims] = useState<Dims>({ width: 0, height: 600 })
   const [coverUrls, setCoverUrls] = useState<Record<string, string | null>>({})
+  const [filterModalOpen, setFilterModalOpen] = useState(false)
 
   useEffect(() => {
     loadCollection().catch(handleDBError)
@@ -62,11 +73,9 @@ export default function LibraryView() {
     for (const manga of mangas) {
       const cached = coverURLCache.get(manga.id)
       if (cached) {
-        // Already in LRU — just expose to render state
         setCoverUrls((prev) => (prev[manga.id] === cached ? prev : { ...prev, [manga.id]: cached }))
         continue
       }
-
       getCoverBlob(manga.id)
         .then((blob) => {
           if (!blob) return
@@ -74,17 +83,31 @@ export default function LibraryView() {
           coverURLCache.set(manga.id, url)
           setCoverUrls((prev) => ({ ...prev, [manga.id]: url }))
         })
-        .catch(() => {
-          // Cover load failure is silent — card shows title fallback
-        })
+        .catch(() => { /* silent — card shows title fallback */ })
     }
   }, [mangas])
+
+  function handleCardClick(mangaId: string) {
+    selectManga(mangaId)
+    setInspectorOpen(true)
+  }
 
   if (!FLAGS.LIBRARY) {
     return <EmptyState icon="🚧" title="Bibliothèque" description="Disponible bientôt." />
   }
 
   const colCount = computeColCount(dims.width)
+  const shelfHeight = Math.max(0, dims.height - FILTER_BAR_HEIGHT)
+
+  const filteredMangas = useMemo(
+    () => applyFilters(mangas, activeAuthors, activeSeries, activeTags),
+    [mangas, activeAuthors, activeSeries, activeTags]
+  )
+
+  // Derive available filter options from full collection
+  const allAuthors = useMemo(() => [...new Set(mangas.flatMap((m) => m.authors))].sort(), [mangas])
+  const allSeries  = useMemo(() => [...new Set(mangas.flatMap((m) => m.series))].sort(),  [mangas])
+  const allTags    = useMemo(() => [...new Set(mangas.flatMap((m) => m.tags))].sort(),    [mangas])
 
   return (
     <div
@@ -92,20 +115,30 @@ export default function LibraryView() {
       className="flex flex-col flex-1 overflow-hidden"
       data-shelf-theme={shelfTheme !== 'wood' ? shelfTheme : undefined}
     >
+      <FilterBar onOpenModal={() => setFilterModalOpen(true)} />
+
       {isLoading ? (
         <div className="flex-1 flex items-center justify-center">
           <Spinner size="lg" />
         </div>
       ) : (
         <Shelf
-          mangas={mangas}
+          mangas={filteredMangas}
           coverUrls={coverUrls}
           onCardClick={handleCardClick}
           colCount={colCount}
-          height={dims.height}
+          height={shelfHeight}
           width={dims.width}
         />
       )}
+
+      <FilterModal
+        open={filterModalOpen}
+        onClose={() => setFilterModalOpen(false)}
+        allAuthors={allAuthors}
+        allSeries={allSeries}
+        allTags={allTags}
+      />
     </div>
   )
 }
