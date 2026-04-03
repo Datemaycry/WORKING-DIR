@@ -18,13 +18,23 @@ Résume-moi où on en est et ce qu'on fait aujourd'hui.
 
 ## En cours
 
-**Brique :** Brique 4 — Library/Hub (à démarrer)
+**Brique :** Brique 5 — Reader (à démarrer)
 
-**Prochaine action :** Créer la branche `brick/4-library`, démarrer par 4a (étagère vide + rendu d'un manga), puis virtualisation react-window (4b), LED (4c), couvertures (4d)
+**Prochaine action :** Créer la branche `brick/5-reader`, démarrer par 5a (affichage image simple via `pages` store/IndexedDB), puis 5b (navigation clavier/boutons), 5c (swipe `useSwipeGesture`), 5d (double page), 5h (progression auto), 5e (curl), 5f (mode nuit), 5g (sons)
 
 ---
 
 ## Historique des sessions
+
+### Session 3 — 2026-04-03 (suite)
+- Brique 4 complète (4a→4h + 4.5)
+- react-window, quick-lru, fuse.js installés
+- LibraryView : shelf virtualisée, LED, couvertures LRU, filtres multi-select, recherche Fuse.js, badges progression
+- MangaInspector : SidePanel avec métadonnées, progression, actions (Lire/Modifier/Supprimer)
+- 40/40 tests — 0 erreur TypeScript
+- **Prochaine étape : Brique 5 — Reader**
+
+---
 
 ### Session 1 — 2026-04-02
 - Contexte récupéré depuis l'ancienne session (mangahub-pro)

@@ -103,4 +103,35 @@
 ### Résultat
 40/40 tests passent — `npx tsc --noEmit` 0 erreur
 
+## [2026-04-03] — Brique 4 : Library/Hub
+
+### Ajouté
+- `npm install react-window quick-lru fuse.js` + `@types/react-window`
+- `src/utils/constants.ts` : constantes layout (CARD dimensions, SHELF_ROW_HEIGHT, LRU_CAPACITY)
+- `src/utils/format.ts` : `formatDate`, `formatProgress`
+- `src/components/library/MangaCover.tsx` : image couverture ou fallback titre
+- `src/components/library/MangaCard.tsx` : carte (couverture + titre + slot badge)
+- `src/components/library/ShelfRow.tsx` : ligne d'étagère avec plank bois + LEDStrip
+- `src/components/library/Shelf.tsx` : FixedSizeList react-window, rows calculés depuis colCount
+- `src/components/library/LEDStrip.tsx` : bande LED animée (`shelf-glow` + CSS vars)
+- `src/components/library/LibraryView.tsx` : orchestrateur (ResizeObserver, cover loading, filtre+search, colCount)
+- `src/components/library/FilterBar.tsx` : pills filtres actifs + bouton ouverture modale
+- `src/components/library/FilterModal.tsx` : modale multi-select auteurs/séries/tags
+- `src/components/library/SearchBar.tsx` : input recherche → useFilterStore.setSearchQuery
+- `src/components/library/ProgressBadge.tsx` : badge % / ✓ overlay sur la carte
+- `src/hooks/useImageURL.ts` : ObjectURL lifecycle (create + revoke au unmount)
+- `src/hooks/useLRUCache.ts` : QuickLRU singleton pour coverURLCache (onEviction → revokeObjectURL)
+- `src/hooks/useFuseSearch.ts` : Fuse.js sur titre/auteurs/séries/tags, threshold 0.35
+- `src/db/pages.ts` : `getCoverBlob(mangaId)` — premier blob via cursor (couverture)
+- `src/components/inspector/MangaInspector.tsx` : panneau SidePanel connecté aux stores
+- `src/components/inspector/InspectorHeader.tsx` : couverture + titre + auteurs
+- `src/components/inspector/InspectorMeta.tsx` : séries, tags, pages, date ajout
+- `src/components/inspector/InspectorProgress.tsx` : barre de progression + "Reprendre"
+- `src/components/inspector/InspectorActions.tsx` : boutons Lire / Modifier / Supprimer
+- `src/index.css` : tokens shelf plank + thèmes `[data-shelf-theme="dark/glass"]`
+- `FLAGS.LIBRARY`, `FLAGS.COVER_IMAGES`, `FLAGS.INSPECTOR` → `true`
+
+### Résultat
+40/40 tests passent — `npx tsc --noEmit` 0 erreur
+
 <!-- Les prochaines entrées seront ajoutées ici au fil des sessions -->

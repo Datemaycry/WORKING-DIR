@@ -159,23 +159,21 @@ useFilterStore    → auteurs/séries/tags actifs, searchQuery               (no
 ---
 
 ### Brique 4 — Library/Hub
-**Statut : [ ] À faire**
+**Statut : [x] Terminé**
 **Branche : `brick/4-library`**
 
 **Phase A — Affichage (4a→4d)**
-- [ ] 4a : Étagère vide + rendu d'un manga
-- [ ] 4b : Virtualisation (react-window)
-- [ ] 4c : Effet LED + thèmes étagère
-- [ ] 4d : Couvertures (IndexedDB → ObjectURL → LRU + revoke)
-
-> Valider visuellement avant de continuer
+- [x] 4a : Étagère vide + rendu d'un manga
+- [x] 4b : Virtualisation (react-window)
+- [x] 4c : Effet LED + thèmes étagère
+- [x] 4d : Couvertures (IndexedDB → ObjectURL → LRU + revoke)
 
 **Phase B — Interaction (4e→4h + Inspector)**
-- [ ] 4e : Sélection manga → ouverture reader
-- [ ] 4.5 : MangaInspector (panneau latéral, métadonnées, progression, actions)
-- [ ] 4f : Filtres multi-select (Auteur/Série/Tags)
-- [ ] 4g : Recherche (Fuse.js)
-- [ ] 4h : Badges (non-lu, progression)
+- [x] 4e : Sélection manga → ouverture reader
+- [x] 4.5 : MangaInspector (panneau latéral, métadonnées, progression, actions)
+- [x] 4f : Filtres multi-select (Auteur/Série/Tags)
+- [x] 4g : Recherche (Fuse.js)
+- [x] 4h : Badges (non-lu, progression)
 
 ---
 
