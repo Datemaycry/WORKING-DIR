@@ -5,11 +5,13 @@ import { useUIStore } from '../../stores/useUIStore'
 import { useFilterStore } from '../../stores/useFilterStore'
 import { useDBErrorHandler } from '../../hooks/useDBErrorHandler'
 import { coverURLCache } from '../../hooks/useLRUCache'
+import { useFuseSearch } from '../../hooks/useFuseSearch'
 import { getCoverBlob } from '../../db/pages'
 import type { Manga } from '../../types/manga'
 import Shelf from './Shelf'
 import FilterBar from './FilterBar'
 import FilterModal from './FilterModal'
+import SearchBar from './SearchBar'
 import Spinner from '../ui/Spinner'
 import EmptyState from '../ui/EmptyState'
 import FLAGS from '../../flags'
@@ -17,7 +19,7 @@ import { CARD_COVER_WIDTH, SHELF_CARDS_GAP, SHELF_H_PADDING } from '../../utils/
 
 interface Dims { width: number; height: number }
 
-const FILTER_BAR_HEIGHT = 44 // px, matches h-11
+const TOOLBAR_HEIGHT = 44 + 36 // FilterBar h-11 + SearchBar h-8 + padding
 
 function computeColCount(width: number): number {
   if (width <= 0) return 3
@@ -43,6 +45,7 @@ export default function LibraryView() {
   const activeAuthors = useFilterStore((s) => s.activeAuthors)
   const activeSeries = useFilterStore((s) => s.activeSeries)
   const activeTags = useFilterStore((s) => s.activeTags)
+  const searchQuery = useFilterStore((s) => s.searchQuery)
   const handleDBError = useDBErrorHandler()
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -97,12 +100,13 @@ export default function LibraryView() {
   }
 
   const colCount = computeColCount(dims.width)
-  const shelfHeight = Math.max(0, dims.height - FILTER_BAR_HEIGHT)
+  const shelfHeight = Math.max(0, dims.height - TOOLBAR_HEIGHT)
 
-  const filteredMangas = useMemo(
+  const filterPassedMangas = useMemo(
     () => applyFilters(mangas, activeAuthors, activeSeries, activeTags),
     [mangas, activeAuthors, activeSeries, activeTags]
   )
+  const filteredMangas = useFuseSearch(filterPassedMangas, searchQuery)
 
   // Derive available filter options from full collection
   const allAuthors = useMemo(() => [...new Set(mangas.flatMap((m) => m.authors))].sort(), [mangas])
@@ -115,6 +119,7 @@ export default function LibraryView() {
       className="flex flex-col flex-1 overflow-hidden"
       data-shelf-theme={shelfTheme !== 'wood' ? shelfTheme : undefined}
     >
+      <SearchBar />
       <FilterBar onOpenModal={() => setFilterModalOpen(true)} />
 
       {isLoading ? (
