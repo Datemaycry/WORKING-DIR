@@ -8,6 +8,7 @@ import { useSwipeGesture } from '../../hooks/useSwipeGesture'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { useAutoSave } from '../../hooks/useAutoSave'
 import { useSettingsStore } from '../../stores/useSettingsStore'
+import { useSounds } from '../../hooks/useSounds'
 import { usePageCurl } from '../../hooks/usePageCurl'
 import { getPageByNumber } from '../../db/pages'
 import PageCurlCanvas from './PageCurlCanvas'
@@ -128,9 +129,11 @@ export default function ReaderView() {
   const manga = mangas.find((m) => m.id === id)
   const effective = totalPages || manga?.totalPages || 0
 
+  const { play } = useSounds()
+
   const handleBack  = useCallback(() => navigate('/'), [navigate])
-  const handleNext  = useCallback(() => { nextPage(); showToolbar() }, [nextPage])
-  const handlePrev  = useCallback(() => { prevPage(); showToolbar() }, [prevPage])
+  const handleNext  = useCallback(() => { nextPage(); showToolbar(); play('page-turn') }, [nextPage, play])
+  const handlePrev  = useCallback(() => { prevPage(); showToolbar(); play('page-turn') }, [prevPage, play])
   const handleGoto  = useCallback((p: number) => { goToPage(p); showToolbar() }, [goToPage])
 
   useKeyboardNav({ onNext: handleNext, onPrev: handlePrev, onClose: handleBack })
