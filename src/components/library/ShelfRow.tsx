@@ -1,6 +1,7 @@
 import type { Manga } from '../../types/manga'
 import MangaCard from './MangaCard'
 import LEDStrip from './LEDStrip'
+import ProgressBadge from './ProgressBadge'
 import { SHELF_CARDS_GAP, SHELF_PLANK_HEIGHT, SHELF_ROW_GAP } from '../../utils/constants'
 
 interface Props {
@@ -31,6 +32,12 @@ export default function ShelfRow({ mangas, coverUrls, onCardClick, style }: Prop
             manga={manga}
             coverUrl={coverUrls[manga.id] ?? null}
             onClick={onCardClick}
+            badge={
+              <ProgressBadge
+                progress={manga.readingProgress}
+                totalPages={manga.totalPages}
+              />
+            }
           />
         ))}
       </div>
