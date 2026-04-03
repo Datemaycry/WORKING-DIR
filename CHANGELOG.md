@@ -76,4 +76,31 @@
 ### Résultat tests
 40/40 tests passent — `npx tsc --noEmit` 0 erreur
 
+## [2026-04-03] — Brique 3 : Shell & Design System
+
+### Ajouté
+- `src/index.css` : tokens CSS étendus — thèmes `dark`/`light`/`amoled` via `[data-theme]`, typographie, layout tokens, animations (fade-in, slide-up, toast-in)
+- `src/hooks/useSettingsSync.ts` : sync `useSettingsStore` → CSS vars (`data-theme`, `--led-intensity`, night mode filters, animation speed)
+- `src/hooks/useDBErrorHandler.ts` : hook qui traduit `DBQuotaError`/`DBUnavailableError` en toasts
+- `src/components/layout/Shell.tsx` : layout principal, monte `useSettingsSync`, wrap Header + main + NavBar
+- `src/components/layout/Header.tsx` : header configurable (title, left, right slots)
+- `src/components/layout/NavBar.tsx` : navigation bottom Bibliothèque / Paramètres avec NavLink active state
+- `src/components/layout/SidePanel.tsx` : panneau latéral slide-in avec backdrop, Escape, focus trap
+- `src/components/ui/Button.tsx` : variants (primary/secondary/ghost/danger), sizes, loading spinner
+- `src/components/ui/IconButton.tsx` : bouton icône accessible avec aria-label
+- `src/components/ui/Spinner.tsx` : indicateur de chargement accessible
+- `src/components/ui/EmptyState.tsx` : état vide configurable (icon, title, description, action)
+- `src/components/ui/Slider.tsx` : range input accessible avec label et valeur formatée
+- `src/components/ui/Toggle.tsx` : switch accessible (role="switch", aria-checked)
+- `src/components/ui/Pill.tsx` : tag cliquable avec état actif, toggle et remove
+- `src/components/ui/Modal.tsx` : modale portail avec Escape, scroll lock, focus, aria
+- `src/components/ui/Toast.tsx` + `ToastContainer` : toasts auto-dismiss 4s, portail, connectés à `useUIStore`
+- `src/components/ui/ErrorBoundary.tsx` : class component Error Boundary avec reset
+- `src/components/ui/ErrorFallback.tsx` : UI fallback d'erreur
+- `src/db/connection.ts` : `DBUnavailableError` + `DBQuotaError` + `withDBErrorHandling()` wrapper
+- `src/App.tsx` : intègre Shell, ErrorBoundary, ToastContainer, routes placeholder via EmptyState
+
+### Résultat
+40/40 tests passent — `npx tsc --noEmit` 0 erreur
+
 <!-- Les prochaines entrées seront ajoutées ici au fil des sessions -->

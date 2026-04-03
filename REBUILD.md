@@ -146,15 +146,15 @@ useFilterStore    → auteurs/séries/tags actifs, searchQuery               (no
 ---
 
 ### Brique 3 — Shell & Design System
-**Statut : [ ] À faire**
+**Statut : [x] Terminé**
 **Branche : `brick/3-shell`**
 
-- [ ] Layout global (AppShell)
-- [ ] Tokens CSS (couleurs, typographie, spacing)
-- [ ] Composants atomiques : Button, Slider, Modal, Pill, Toast
-- [ ] Error Boundary global
-- [ ] Hook `useSettings` qui sync store → CSS variables
-- [ ] Fallbacks IndexedDB (quota dépassé, mode privé)
+- [x] Layout global (AppShell)
+- [x] Tokens CSS (couleurs, typographie, spacing)
+- [x] Composants atomiques : Button, Slider, Modal, Pill, Toast
+- [x] Error Boundary global
+- [x] Hook `useSettingsSync` qui sync store → CSS variables
+- [x] Fallbacks IndexedDB (quota dépassé, mode privé)
 
 ---
 

@@ -18,9 +18,9 @@ Résume-moi où on en est et ce qu'on fait aujourd'hui.
 
 ## En cours
 
-**Brique :** Brique 3 — Shell & Design System (à démarrer)
+**Brique :** Brique 4 — Library/Hub (à démarrer)
 
-**Prochaine action :** Créer la branche `brick/3-shell`, implémenter AppShell, tokens CSS, composants atomiques (Button, Slider, Modal, Pill, Toast), Error Boundary, hook useSettingsSync
+**Prochaine action :** Créer la branche `brick/4-library`, démarrer par 4a (étagère vide + rendu d'un manga), puis virtualisation react-window (4b), LED (4c), couvertures (4d)
 
 ---
 

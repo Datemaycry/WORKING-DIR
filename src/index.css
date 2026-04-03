@@ -2,31 +2,98 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Design tokens ─────────────────────────────────────────── */
-:root {
-  /* Palette */
+/* ── Design tokens — default (dark theme) ─────────────────── */
+:root,
+[data-theme="dark"] {
+  /* Background layers */
   --color-bg: #0f0f0f;
   --color-surface: #1a1a1a;
   --color-surface-raised: #242424;
   --color-border: #2e2e2e;
+  --color-border-subtle: #1e1e1e;
+
+  /* Text */
   --color-text: #f0f0f0;
-  --color-text-muted: #888;
+  --color-text-muted: #888888;
+  --color-text-disabled: #555555;
+
+  /* Accent */
   --color-accent: #e63946;
   --color-accent-hover: #c1121f;
+  --color-accent-subtle: rgba(230, 57, 70, 0.15);
 
-  /* LED shelf glow (overridden by useSettingsStore) */
+  /* Feedback */
+  --color-success: #2dc653;
+  --color-warning: #f4a261;
+  --color-error: #e63946;
+  --color-info: #4cc9f0;
+
+  /* LED shelf glow (overridden at runtime by useSettingsSync) */
   --led-color: #e63946;
   --led-intensity: 0.6;
+  --shelf-depth: 40px;
 
-  /* Spacing */
+  /* Night mode overlay (overridden by useSettingsSync) */
+  --night-sepia: 0;
+  --night-brightness: 1;
+
+  /* Page turn */
+  --page-turn-duration: 0.6s;
+  --page-snap-duration: 0.4s;
+
+  /* Radius */
+  --radius-xs: 2px;
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
 
   /* Transitions */
   --duration-fast: 120ms;
   --duration-normal: 220ms;
   --duration-slow: 400ms;
+
+  /* Typography */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* Layout */
+  --header-height: 56px;
+  --navbar-height: 56px;
+  --sidebar-width: 320px;
+}
+
+[data-theme="light"] {
+  --color-bg: #f5f5f5;
+  --color-surface: #ffffff;
+  --color-surface-raised: #efefef;
+  --color-border: #d8d8d8;
+  --color-border-subtle: #e8e8e8;
+  --color-text: #111111;
+  --color-text-muted: #666666;
+  --color-text-disabled: #aaaaaa;
+  --color-accent: #e63946;
+  --color-accent-hover: #c1121f;
+  --color-accent-subtle: rgba(230, 57, 70, 0.1);
+}
+
+[data-theme="amoled"] {
+  --color-bg: #000000;
+  --color-surface: #0a0a0a;
+  --color-surface-raised: #141414;
+  --color-border: #222222;
+  --color-border-subtle: #111111;
+  --color-text: #ffffff;
+  --color-text-muted: #777777;
+  --color-text-disabled: #444444;
 }
 
 /* ── Global reset ───────────────────────────────────────────── */
@@ -76,3 +143,52 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+/* ── Focus visible ──────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+/* ── Animations ─────────────────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shelf-glow {
+  0%, 100% { opacity: calc(var(--led-intensity) * 0.8); }
+  50%       { opacity: var(--led-intensity); }
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes toast-out {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.94); }
+}
+
+.animate-fade-in  { animation: fade-in var(--duration-normal) ease both; }
+.animate-slide-up { animation: slide-up var(--duration-normal) ease both; }
+.animate-toast-in { animation: toast-in 200ms ease both; }

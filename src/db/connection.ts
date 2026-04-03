@@ -6,6 +6,10 @@
  *   - mangas    keyPath: id
  *   - pages     keyPath: id, index: mangaId
  *   - settings  keyPath: key
+ *
+ * Fallbacks:
+ *   - QuotaExceededError  → throws DBQuotaError (caught by stores → toast)
+ *   - Private mode / IDB unavailable → throws DBUnavailableError
  */
 
 const DB_NAME = 'mangahub-pro'
@@ -16,7 +20,6 @@ let idbFactory: IDBFactory | null = null
 
 function getFactory(): IDBFactory {
   if (idbFactory) return idbFactory
-  // Lazy-init: safe in browser, overridable in tests via resetDBConnection(factory)
   return indexedDB
 }
 
@@ -27,18 +30,66 @@ export function getDB(): Promise<IDBDatabase> {
   return dbPromise
 }
 
-/**
- * Reset the cached connection.
- * In tests, pass a fresh IDBFactory instance to get a fully isolated DB.
- */
 export function resetDBConnection(factory?: IDBFactory): void {
   dbPromise = null
   idbFactory = factory ?? null
 }
 
+// ── Custom error types ────────────────────────────────────────────────────
+
+export class DBUnavailableError extends Error {
+  constructor() {
+    super('IndexedDB is not available (private mode or unsupported browser).')
+    this.name = 'DBUnavailableError'
+  }
+}
+
+export class DBQuotaError extends Error {
+  constructor() {
+    super('Storage quota exceeded. Free up space or clear old data.')
+    this.name = 'DBQuotaError'
+  }
+}
+
+// ── Quota-aware wrapper ───────────────────────────────────────────────────
+
+/**
+ * Wraps any DB call and translates IDB error names to typed errors.
+ * Usage: await withDBErrorHandling(() => insertManga(manga))
+ */
+export async function withDBErrorHandling<T>(fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn()
+  } catch (err) {
+    if (err instanceof DOMException) {
+      if (err.name === 'QuotaExceededError') throw new DBQuotaError()
+      if (err.name === 'UnknownError' || err.name === 'InvalidStateError') {
+        throw new DBUnavailableError()
+      }
+    }
+    throw err
+  }
+}
+
+// ── Open DB ───────────────────────────────────────────────────────────────
+
 function openDB(): Promise<IDBDatabase> {
   return new Promise<IDBDatabase>((resolve, reject) => {
-    const request = getFactory().open(DB_NAME, DB_VERSION)
+    let factory: IDBFactory
+    try {
+      factory = getFactory()
+    } catch {
+      reject(new DBUnavailableError())
+      return
+    }
+
+    let request: IDBOpenDBRequest
+    try {
+      request = factory.open(DB_NAME, DB_VERSION)
+    } catch {
+      reject(new DBUnavailableError())
+      return
+    }
 
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result
@@ -58,6 +109,10 @@ function openDB(): Promise<IDBDatabase> {
     }
 
     request.onsuccess = () => resolve(request.result)
-    request.onerror = () => reject(request.error)
+    request.onerror = () => {
+      const err = request.error
+      if (err?.name === 'QuotaExceededError') reject(new DBQuotaError())
+      else reject(new DBUnavailableError())
+    }
   })
 }
