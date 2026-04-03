@@ -7,9 +7,11 @@ import { useKeyboardNav } from '../../hooks/useKeyboardNav'
 import { useSwipeGesture } from '../../hooks/useSwipeGesture'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { useAutoSave } from '../../hooks/useAutoSave'
+import { useSettingsStore } from '../../stores/useSettingsStore'
 import { usePageCurl } from '../../hooks/usePageCurl'
 import { getPageByNumber } from '../../db/pages'
 import PageCurlCanvas from './PageCurlCanvas'
+import NightModeOverlay from './NightModeOverlay'
 import PageDisplay from './PageDisplay'
 import ReaderHUD from './ReaderHUD'
 import ReaderToolbar from './ReaderToolbar'
@@ -34,6 +36,7 @@ export default function ReaderView() {
 
   const viewMode    = useReaderStore((s) => s.viewMode)
   const setViewMode = useReaderStore((s) => s.setViewMode)
+  const isNightMode = useSettingsStore((s) => s.isNightMode)
   const isLandscape = useMediaQuery('(orientation: landscape)')
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -165,6 +168,9 @@ export default function ReaderView() {
         viewMode={viewMode}
         isLandscape={isLandscape}
       />
+
+      {/* Night mode overlay */}
+      <NightModeOverlay enabled={isNightMode} />
 
       {/* Page curl overlay */}
       {FLAGS.PAGE_CURL && <PageCurlCanvas curl={curl} />}
