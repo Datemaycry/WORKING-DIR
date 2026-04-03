@@ -4,7 +4,7 @@
  */
 const FLAGS = {
   /** Brique 4 — Library / shelf */
-  LIBRARY: false,
+  LIBRARY: true,
   /** Brique 4d — Cover images via IndexedDB + ObjectURL */
   COVER_IMAGES: false,
   /** Brique 4.5 — MangaInspector side panel */

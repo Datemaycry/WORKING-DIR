@@ -4,6 +4,7 @@ import Shell from './components/layout/Shell'
 import ToastContainer from './components/ui/Toast'
 import EmptyState from './components/ui/EmptyState'
 import Button from './components/ui/Button'
+import LibraryView from './components/library/LibraryView'
 
 function PlaceholderPage({ name }: { name: string }) {
   return (
@@ -21,7 +22,7 @@ export default function App() {
       <HashRouter>
         <Shell>
           <Routes>
-            <Route path="/" element={<PlaceholderPage name="Bibliothèque" />} />
+            <Route path="/" element={<LibraryView />} />
             <Route path="/reader/:id" element={<PlaceholderPage name="Reader" />} />
             <Route
               path="/settings"
