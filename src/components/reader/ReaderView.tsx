@@ -6,6 +6,7 @@ import { useDBErrorHandler } from '../../hooks/useDBErrorHandler'
 import { useKeyboardNav } from '../../hooks/useKeyboardNav'
 import { useSwipeGesture } from '../../hooks/useSwipeGesture'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
+import { useAutoSave } from '../../hooks/useAutoSave'
 import { getPageByNumber } from '../../db/pages'
 import PageDisplay from './PageDisplay'
 import ReaderHUD from './ReaderHUD'
@@ -128,6 +129,7 @@ export default function ReaderView() {
   const handleGoto  = useCallback((p: number) => { goToPage(p); showToolbar() }, [goToPage])
 
   useKeyboardNav({ onNext: handleNext, onPrev: handlePrev, onClose: handleBack })
+  useAutoSave(mangaId, currentPage, effective)
 
   useSwipeGesture(containerRef, {
     onSwipe: ({ direction }) => {
