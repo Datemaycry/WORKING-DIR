@@ -42,4 +42,18 @@
 - **`db/migration.ts`** : script migration intégré à la data layer dès Brique 1
 - **Types séparés par domaine** : `manga.ts`, `page.ts`, `settings.ts`, `progress.ts`, `filters.ts` (au lieu d'un seul `index.ts`)
 
+## [2026-04-03] — Brique 0 : Scaffold
+
+### Ajouté
+- `package.json` : React 19, TypeScript, Vite 6, Zustand 5, react-router-dom 7, vite-plugin-pwa, Tailwind, Vitest
+- `vite.config.ts` : vite-plugin-pwa avec `devOptions: { enabled: false }`
+- `tsconfig.json` / `tsconfig.app.json` / `tsconfig.node.json` : TypeScript strict
+- `tailwind.config.ts` + `postcss.config.js` : Tailwind CSS configuré
+- `src/index.css` : CSS variables design tokens (couleurs, LED, radius, durées) + reset global
+- `src/flags.ts` : feature flags pour toutes les briques (LIBRARY, READER, FORMS, etc.)
+- `src/types/index.ts` : interfaces `Manga`, `Page`, `Settings`, `ReadingProgress`, `FilterState`, `DisplayMode`
+- `src/main.tsx` : point d'entrée React 19 StrictMode
+- `src/App.tsx` : HashRouter avec routes `/`, `/reader/:id`, `/settings`
+- `index.html` : HTML minimal avec meta viewport et theme-color
+
 <!-- Les prochaines entrées seront ajoutées ici au fil des sessions -->

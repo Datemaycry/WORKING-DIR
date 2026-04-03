@@ -101,16 +101,16 @@ useFilterStore    → auteurs/séries/tags actifs, searchQuery               (no
 ## Roadmap — Statut des Briques
 
 ### Brique 0 — Scaffold
-**Statut : [ ] À faire**
+**Statut : [x] Terminé**
 **Branche : `brick/0-scaffold`**
 
-- [ ] Vite + React + TypeScript
-- [ ] Tailwind CSS configuré
-- [ ] CSS variables + reset global
-- [ ] vite-plugin-pwa (devOptions: { enabled: false })
-- [ ] Hash router minimal
-- [ ] `src/flags.ts` avec feature flags
-- [ ] `src/types/index.ts` avec toutes les interfaces
+- [x] Vite + React + TypeScript
+- [x] Tailwind CSS configuré
+- [x] CSS variables + reset global
+- [x] vite-plugin-pwa (devOptions: { enabled: false })
+- [x] Hash router minimal
+- [x] `src/flags.ts` avec feature flags
+- [x] `src/types/index.ts` avec toutes les interfaces
 
 ---
 

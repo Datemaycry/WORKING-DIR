@@ -18,9 +18,9 @@ Résume-moi où on en est et ce qu'on fait aujourd'hui.
 
 ## En cours
 
-**Brique :** Aucune — planification terminée, prêt à démarrer Brique 0
+**Brique :** Brique 1+2 — Data Layer + State (à démarrer)
 
-**Prochaine action :** Créer la branche `brick/0-scaffold` et initialiser le projet Vite + React + TypeScript
+**Prochaine action :** Créer la branche `brick/1-data-state`, implémenter `src/db/connection.ts` puis CRUD mangas/pages/settings
 
 ---
 
