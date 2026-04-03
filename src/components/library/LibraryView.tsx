@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useMangaStore } from '../../stores/useMangaStore'
 import { useSettingsStore } from '../../stores/useSettingsStore'
 import { useDBErrorHandler } from '../../hooks/useDBErrorHandler'
+import { coverURLCache } from '../../hooks/useLRUCache'
+import { getCoverBlob } from '../../db/pages'
 import Shelf from './Shelf'
 import Spinner from '../ui/Spinner'
 import EmptyState from '../ui/EmptyState'
@@ -28,6 +30,7 @@ export default function LibraryView() {
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [dims, setDims] = useState<Dims>({ width: 0, height: 600 })
+  const [coverUrls, setCoverUrls] = useState<Record<string, string | null>>({})
 
   useEffect(() => {
     loadCollection().catch(handleDBError)
@@ -45,19 +48,43 @@ export default function LibraryView() {
     return () => obs.disconnect()
   }, [])
 
+  // Load cover images lazily — check LRU first, then fetch from IndexedDB
+  useEffect(() => {
+    if (!FLAGS.COVER_IMAGES || mangas.length === 0) return
+
+    for (const manga of mangas) {
+      const cached = coverURLCache.get(manga.id)
+      if (cached) {
+        // Already in LRU — just expose to render state
+        setCoverUrls((prev) => (prev[manga.id] === cached ? prev : { ...prev, [manga.id]: cached }))
+        continue
+      }
+
+      getCoverBlob(manga.id)
+        .then((blob) => {
+          if (!blob) return
+          const url = URL.createObjectURL(blob)
+          coverURLCache.set(manga.id, url)
+          setCoverUrls((prev) => ({ ...prev, [manga.id]: url }))
+        })
+        .catch(() => {
+          // Cover load failure is silent — card shows title fallback
+        })
+    }
+  }, [mangas])
+
   if (!FLAGS.LIBRARY) {
     return <EmptyState icon="🚧" title="Bibliothèque" description="Disponible bientôt." />
   }
 
   const colCount = computeColCount(dims.width)
 
-  // coverUrls: populated by coverObjectURL when set (filled in 4d via useImageURL)
-  const coverUrls: Record<string, string | null> = Object.fromEntries(
-    mangas.map((m) => [m.id, m.coverObjectURL ?? null])
-  )
-
   return (
-    <div ref={containerRef} className="flex flex-col flex-1 overflow-hidden" data-shelf-theme={shelfTheme !== 'wood' ? shelfTheme : undefined}>
+    <div
+      ref={containerRef}
+      className="flex flex-col flex-1 overflow-hidden"
+      data-shelf-theme={shelfTheme !== 'wood' ? shelfTheme : undefined}
+    >
       {isLoading ? (
         <div className="flex-1 flex items-center justify-center">
           <Spinner size="lg" />
