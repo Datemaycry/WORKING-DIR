@@ -5,6 +5,7 @@ import ToastContainer from './components/ui/Toast'
 import EmptyState from './components/ui/EmptyState'
 import Button from './components/ui/Button'
 import LibraryView from './components/library/LibraryView'
+import MangaInspector from './components/inspector/MangaInspector'
 
 function PlaceholderPage({ name }: { name: string }) {
   return (
@@ -41,6 +42,7 @@ export default function App() {
             />
           </Routes>
           <ToastContainer />
+          <MangaInspector />
         </Shell>
       </HashRouter>
     </ErrorBoundary>

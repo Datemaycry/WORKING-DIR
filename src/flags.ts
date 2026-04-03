@@ -8,7 +8,7 @@ const FLAGS = {
   /** Brique 4d — Cover images via IndexedDB + ObjectURL */
   COVER_IMAGES: true,
   /** Brique 4.5 — MangaInspector side panel */
-  INSPECTOR: false,
+  INSPECTOR: true,
   /** Brique 5 — Reader */
   READER: false,
   /** Brique 5e — Page curl animation */
